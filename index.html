@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oliyide Ayomide | Frontend Developer</title>
+    <meta name="description" content="Portfolio of Oliyide Ayomide - Frontend Developer specializing in React, Tailwind CSS, and modern web applications.">
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Framer Motion -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#ec4899',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        
+        .skill-bar-fill {
+            transition: width 1.5s ease-out;
+        }
+        
+        .project-card {
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #ec4899);
+            transition: width 0.3s;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-darker text-white antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { motion, useScroll, useTransform, AnimatePresence } = window.Motion;
+
+        // Navigation Component
+        const Navbar = () => {
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setIsScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const navLinks = [
+                { name: 'About', href: '#about' },
+                { name: 'Skills', href: '#skills' },
+                { name: 'Projects', href: '#projects' },
+                { name: 'Services', href: '#services' },
+                { name: 'Contact', href: '#contact' },
+            ];
+
+            return (
+                <motion.nav 
+                    initial={{ y: -100 }}
+                    animate={{ y: 0 }}
+                    className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'glass py-4' : 'py-6'}`}
+                >
+                    <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                        <motion.a 
+                            href="#" 
+                            className="text-2xl font-bold gradient-text"
+                            whileHover={{ scale: 1.05 }}
+                        >
+                            OA
+                        </motion.a>
+
+                        {/* Desktop Nav */}
+                        <div className="hidden md:flex space-x-8">
+                            {navLinks.map((link) => (
+                                <a key={link.name} href={link.href} className="nav-link text-sm font-medium hover:text-primary transition-colors">
+                                    {link.name}
+                                </a>
+                            ))}
+                        </div>
+
+                        <div className="hidden md:flex items-center gap-4">
+                            <a href="https://github.com/ayomide-html" target="_blank" className="hover:text-primary transition-colors">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            </a>
+                            <a href="#contact" className="px-6 py-2 bg-primary text-white rounded-full font-medium hover:bg-secondary transition-all hover:scale-105">
+                                Hire Me
+                            </a>
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <button 
+                            className="md:hidden text-white"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        >
+                            {mobileMenuOpen ? <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg> : <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>}
+                        </button>
+                    </div>
+
+                    {/* Mobile Menu */}
+                    <AnimatePresence>
+                        {mobileMenuOpen && (
+                            <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="md:hidden glass border-t border-white/10 mt-4"
+                            >
+                                <div className="px-6 py-4 space-y-4">
+                                    {navLinks.map((link) => (
+                                        <a 
+                                            key={link.name} 
+                                            href={link.href} 
+                                            className="block text-lg font-medium hover:text-primary transition-colors"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            {link.name}
+                                        </a>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </motion.nav>
+            );
+        };
+
+        // Hero Section
+        const Hero = () => {
+            return (
+                <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+                    {/* Animated Blobs */}
+                    <div className="blob bg-primary w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2"></div>
+                    <div className="blob bg-secondary w-80 h-80 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3 animation-delay-2000"></div>
+                    <div className="blob bg-accent w-64 h-64 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animation-delay-4000"></div>
+
+                    <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
+                        <motion.div 
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8 }}
+                            className="space-y-6"
+                        >
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium"
+                            >
+                                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                Available for projects
+                            </motion.div>
+
+                            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+                                Hi, I'm <span className="gradient-text">Oliyide Ayomide</span>
+                            </h1>
+                            
+                            <h2 className="text-2xl md:text-3xl text-gray-400 font-light">
+                                Frontend Developer
+                            </h2>
+                            
+                            <p className="text-lg text-gray-400 max-w-lg leading-relaxed">
+                                I build responsive, modern and user-focused web applications. 
+                                Transforming ideas into real-world digital experiences with clean code and creative design.
+                            </p>
+
+                            <div className="flex flex-wrap gap-4">
+                                <motion.a 
+                                    href="#projects"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="px-8 py-4 bg-primary text-white rounded-full font-semibold hover:bg-secondary transition-colors flex items-center gap-2 shadow-lg shadow-primary/25"
+                                >
+                                    View Projects
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                </motion.a>
+                                <motion.a 
+                                    href="#contact"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="px-8 py-4 border border-white/20 rounded-full font-semibold hover:border-primary hover:text-primary transition-all"
+                                >
+                                    Contact Me
+                                </motion.a>
+                            </div>
+
+                            <div className="flex items-center gap-6 pt-4">
+                                <a href="https://github.com/ayomide-html" target="_blank" className="text-gray-400 hover:text-white transition-colors hover:scale-110 transform">
+                                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                </a>
+                                <a href="mailto:oliyideayimide05@gmail.com" className="text-gray-400 hover:text-white transition-colors hover:scale-110 transform">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                </a>
+                                <a href="https://linkedin.com" target="_blank" className="text-gray-400 hover:text-white transition-colors hover:scale-110 transform">
+                                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                </a>
+                            </div>
+                        </motion.div>
+
+                        <motion.div 
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="hidden md:block"
+                        >
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl blur-2xl opacity-30"></div>
+                                <div className="relative glass rounded-3xl p-8 transform hover:scale-105 transition-transform duration-500">
+                                    <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                                        <div className="text-center">
+                                            <div className="text-6xl font-bold gradient-text mb-2">OA</div>
+                                            <div className="text-gray-400 font-mono text-sm">Frontend Developer</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        };
+
+        // About Section
+        const About = () => {
+            return (
+                <section id="about" className="py-32 relative">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                            className="grid md:grid-cols-2 gap-16 items-center"
+                        >
+                            <div className="space-y-6">
+                                <h2 className="text-sm font-bold text-primary tracking-wider uppercase">About Me</h2>
+                                <h3 className="text-4xl md:text-5xl font-bold">Passionate about creating <span className="gradient-text">digital experiences</span></h3>
+                                <p className="text-gray-400 text-lg leading-relaxed">
+                                    I am a passionate Frontend Developer focused on building clean, responsive and high-performance web interfaces. 
+                                    I enjoy transforming ideas into real-world digital experiences that users love.
+                                </p>
+                                <p className="text-gray-400 text-lg leading-relaxed">
+                                    With expertise in modern JavaScript frameworks and CSS architectures, I specialize in creating 
+                                    seamless user experiences that bridge design and functionality.
+                                </p>
+                                
+                                <div className="grid grid-cols-3 gap-6 pt-6">
+                                    <div className="text-center">
+                                        <div className="text-3xl font-bold gradient-text mb-1">2+</div>
+                                        <div className="text-sm text-gray-500">Years Learning</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-3xl font-bold gradient-text mb-1">20+</div>
+                                        <div className="text-sm text-gray-500">Projects Built</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-3xl font-bold gradient-text mb-1">100%</div>
+                                        <div className="text-sm text-gray-500">Commitment</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <motion.div 
+                                    whileHover={{ scale: 1.05 }}
+                                    className="glass rounded-2xl p-6 border border-white/10"
+                                >
+                                    <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mb-4">
+                                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    </div>
+                                    <h4 className="font-bold mb-2">Responsive Design</h4>
+                                    <p className="text-sm text-gray-400">Mobile-first approach ensuring perfect display on all devices.</p>
+                                </motion.div>
+
+                                <motion.div 
+                                    whileHover={{ scale: 1.05 }}
+                                    className="glass rounded-2xl p-6 border border-white/10 mt-8"
+                                >
+                                    <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center mb-4">
+                                        <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    </div>
+                                    <h4 className="font-bold mb-2">Performance</h4>
+                                    <p className="text-sm text-gray-400">Optimized code for fast loading and smooth interactions.</p>
+                                </motion.div>
+
+                                <motion.div 
+                                    whileHover={{ scale: 1.05 }}
+                                    className="glass rounded-2xl p-6 border border-white/10"
+                                >
+                                    <div className="w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center mb-4">
+                                        <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+                                    </div>
+                                    <h4 className="font-bold mb-2">Modern Stack</h4>
+                                    <p className="text-sm text-gray-400">Using latest technologies like React, Tailwind, and Next.js.</p>
+                                </motion.div>
+
+                                <motion.div 
+                                    whileHover={{ scale: 1.05 }}
+                                    className="glass rounded-2xl p-6 border border-white/10 mt-8"
+                                >
+                                    <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center mb-4">
+                                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                    </div>
+                                    <h4 className="font-bold mb-2">User Focus</h4>
+                                    <p className="text-sm text-gray-400">Creating intuitive interfaces with excellent UX principles.</p>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Skills Section
+        const Skills = () => {
+            const skills = [
+                { name: 'HTML5 & CSS3', level: 95, color: 'bg-primary' },
+                { name: 'JavaScript (ES6+)', level: 90, color: 'bg-secondary' },
+                { name: 'React.js', level: 88, color: 'bg-accent' },
+                { name: 'Tailwind CSS', level: 92, color: 'bg-primary' },
+                { name: 'Git & GitHub', level: 85, color: 'bg-secondary' },
+                { name: 'Responsive Design', level: 94, color: 'bg-accent' },
+            ];
+
+            const tools = ['VS Code', 'Figma', 'Chrome DevTools', 'npm/yarn', 'Webpack', 'Postman'];
+
+            return (
+                <section id="skills" className="py-32 relative bg-dark/50">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-16"
+                        >
+                            <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">Skills</h2>
+                            <h3 className="text-4xl md:text-5xl font-bold mb-6">Technical <span className="gradient-text">Expertise</span></h3>
+                        </motion.div>
+
+                        <div className="grid md:grid-cols-2 gap-16">
+                            <motion.div 
+                                initial={{ opacity: 0, x: -50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                className="space-y-6"
+                            >
+                                <h4 className="text-xl font-bold mb-6">Frontend Development</h4>
+                                {skills.map((skill, index) => (
+                                    <div key={skill.name} className="space-y-2">
+                                        <div className="flex justify-between text-sm font-medium">
+                                            <span>{skill.name}</span>
+                                            <span className="text-gray-400">{skill.level}%</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                            <motion.div 
+                                                initial={{ width: 0 }}
+                                                whileInView={{ width: `${skill.level}%` }}
+                                                viewport={{ once: true }}
+                                                transition={{ duration: 1, delay: index * 0.1 }}
+                                                className={`h-full ${skill.color} rounded-full`}
+                                            ></motion.div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </motion.div>
+
+                            <motion.div 
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                            >
+                                <h4 className="text-xl font-bold mb-6">Tools & Technologies</h4>
+                                <div className="flex flex-wrap gap-3">
+                                    {tools.map((tool) => (
+                                        <motion.span 
+                                            key={tool}
+                                            whileHover={{ scale: 1.1 }}
+                                            className="px-4 py-2 glass rounded-lg text-sm font-medium border border-white/10 hover:border-primary/50 transition-colors cursor-default"
+                                        >
+                                            {tool}
+                                        </motion.span>
+                                    ))}
+                                </div>
+
+                                <div className="mt-8 glass rounded-2xl p-6 border border-white/10">
+                                    <h5 className="font-bold mb-4 flex items-center gap-2">
+                                        <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        Currently Learning
+                                    </h5>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li className="flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                            TypeScript
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                            Next.js
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                            Framer Motion
+                                        </li>
+                                    </ul>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Projects Section
+        const Projects = () => {
+            const projects = [
+                {
+                    title: 'E-Commerce Dashboard',
+                    description: 'A modern admin dashboard with dark mode, data visualization, and responsive design.',
+                    image: 'bg-gradient-to-br from-primary/30 to-secondary/30',
+                    tech: ['React', 'Tailwind CSS', 'Recharts'],
+                    live: '#',
+                    github: '#'
+                },
+                {
+                    title: 'Task Management App',
+                    description: 'Full-featured todo app with drag-and-drop, local storage, and filter options.',
+                    image: 'bg-gradient-to-br from-secondary/30 to-accent/30',
+                    tech: ['React', 'LocalStorage', 'CSS Grid'],
+                    live: '#',
+                    github: '#'
+                },
+                {
+                    title: 'Weather Dashboard',
+                    description: 'Real-time weather app with location search, 5-day forecast, and dynamic backgrounds.',
+                    image: 'bg-gradient-to-br from-accent/30 to-primary/30',
+                    tech: ['JavaScript', 'OpenWeather API', 'Fetch API'],
+                    live: '#',
+                    github: '#'
+                },
+                {
+                    title: 'Portfolio Website',
+                    description: 'Personal portfolio with smooth animations, contact form, and dark mode.',
+                    image: 'bg-gradient-to-br from-primary/30 to-accent/30',
+                    tech: ['React', 'Framer Motion', 'Tailwind'],
+                    live: '#',
+                    github: '#'
+                }
+            ];
+
+            return (
+                <section id="projects" className="py-32 relative">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-16"
+                        >
+                            <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">Projects</h2>
+                            <h3 className="text-4xl md:text-5xl font-bold mb-6">Featured <span className="gradient-text">Work</span></h3>
+                            <p className="text-gray-400 max-w-2xl mx-auto">A selection of my recent projects showcasing frontend development skills.</p>
+                        </motion.div>
+
+                        <div className="grid md:grid-cols-2 gap-8">
+                            {projects.map((project, index) => (
+                                <motion.div 
+                                    key={project.title}
+                                    initial={{ opacity: 0, y: 50 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="project-card glass rounded-2xl overflow-hidden border border-white/10 group"
+                                >
+                                    <div className={`aspect-video ${project.image} relative overflow-hidden`}>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="w-20 h-20 rounded-2xl bg-black/50 backdrop-blur flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-500">
+                                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                                            </div>
+                                        </div>
+                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 backdrop-blur-sm">
+                                            <a href={project.live} className="px-6 py-2 bg-primary text-white rounded-full font-medium hover:bg-secondary transition-colors">Live Demo</a>
+                                            <a href={project.github} className="px-6 py-2 border border-white/30 rounded-full font-medium hover:border-primary hover:text-primary transition-colors">GitHub</a>
+                                        </div>
+                                    </div>
+                                    <div className="p-6">
+                                        <h4 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{project.title}</h4>
+                                        <p className="text-gray-400 text-sm mb-4">{project.description}</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {project.tech.map((tech) => (
+                                                <span key={tech} className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full border border-primary/20">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        <div className="text-center mt-12">
+                            <a href="https://github.com/ayomide-html" target="_blank" className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors font-medium">
+                                View More on GitHub
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Services Section
+        const Services = () => {
+            const services = [
+                {
+                    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
+                    title: 'Website Development',
+                    description: 'Custom responsive websites built with modern technologies and best practices.'
+                },
+                {
+                    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>,
+                    title: 'Landing Page Design',
+                    description: 'High-converting landing pages optimized for performance and user engagement.'
+                },
+                {
+                    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>,
+                    title: 'UI Implementation',
+                    description: 'Pixel-perfect implementation of Figma designs into functional web interfaces.'
+                },
+                {
+                    icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+                    title: 'Website Redesign',
+                    description: 'Modernizing existing websites with improved UX, performance, and aesthetics.'
+                }
+            ];
+
+            return (
+                <section id="services" className="py-32 relative bg-dark/50">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-16"
+                        >
+                            <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">Services</h2>
+                            <h3 className="text-4xl md:text-5xl font-bold mb-6">What I <span className="gradient-text">Offer</span></h3>
+                        </motion.div>
+
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {services.map((service, index) => (
+                                <motion.div 
+                                    key={service.title}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    whileHover={{ y: -10 }}
+                                    className="glass rounded-2xl p-6 border border-white/10 hover:border-primary/50 transition-all group"
+                                >
+                                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+                                        {service.icon}
+                                    </div>
+                                    <h4 className="text-lg font-bold mb-2">{service.title}</h4>
+                                    <p className="text-gray-400 text-sm">{service.description}</p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // GitHub Stats Section
+        const GitHubStats = () => {
+            return (
+                <section className="py-20 relative">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="glass rounded-3xl p-8 md:p-12 border border-white/10 text-center"
+                        >
+                            <h3 className="text-2xl font-bold mb-8">GitHub <span className="gradient-text">Activity</span></h3>
+                            <div className="grid md:grid-cols-3 gap-8">
+                                <div>
+                                    <img 
+                                        src="https://github-readme-stats.vercel.app/api?username=ayomide-html&show_icons=true&theme=dark&hide_border=true&bg_color=0f172a&title_color=6366f1&text_color=ffffff&icon_color=8b5cf6" 
+                                        alt="GitHub Stats" 
+                                        className="w-full rounded-xl opacity-80 hover:opacity-100 transition-opacity"
+                                    />
+                                </div>
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="glass rounded-xl p-4 border border-white/10">
+                                        <div className="text-3xl font-bold gradient-text">Public Repos</div>
+                                        <div className="text-gray-400 text-sm">View my open source work</div>
+                                    </div>
+                                    <div className="glass rounded-xl p-4 border border-white/10">
+                                        <div className="text-3xl font-bold gradient-text">Contributions</div>
+                                        <div className="text-gray-400 text-sm">Consistent coding activity</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <img 
+                                        src="https://github-readme-stats.vercel.app/api/top-langs/?username=ayomide-html&layout=compact&theme=dark&hide_border=true&bg_color=0f172a&title_color=6366f1&text_color=ffffff" 
+                                        alt="Top Languages" 
+                                        className="w-full rounded-xl opacity-80 hover:opacity-100 transition-opacity"
+                                    />
+                                </div>
+                            </div>
+                            <div className="mt-8">
+                                <a href="https://github.com/ayomide-html" target="_blank" className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 rounded-full hover:bg-primary/20 transition-colors">
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                    Visit GitHub Profile
+                                </a>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Contact Section
+        const Contact = () => {
+            const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+            const [isSubmitting, setIsSubmitting] = useState(false);
+            const [submitStatus, setSubmitStatus] = useState(null);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setIsSubmitting(true);
+                
+                // Simulate EmailJS integration
+                // In production, initialize EmailJS with: emailjs.init("YOUR_PUBLIC_KEY");
+                // Then use: emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', e.target)
+                
+                setTimeout(() => {
+                    setIsSubmitting(false);
+                    setSubmitStatus('success');
+                    setFormData({ name: '', email: '', message: '' });
+                    setTimeout(() => setSubmitStatus(null), 3000);
+                }, 1500);
+            };
+
+            return (
+                <section id="contact" className="py-32 relative">
+                    <div className="max-w-4xl mx-auto px-6">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-16"
+                        >
+                            <h2 className="text-sm font-bold text-primary tracking-wider uppercase mb-4">Contact</h2>
+                            <h3 className="text-4xl md:text-5xl font-bold mb-6">Let's Work <span className="gradient-text">Together</span></h3>
+                            <p className="text-gray-400">Have a project in mind? I'd love to hear about it.</p>
+                        </motion.div>
+
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="glass rounded-3xl p-8 md:p-12 border border-white/10"
+                        >
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-2">Name</label>
+                                        <input 
+                                            type="text" 
+                                            required
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all text-white"
+                                            placeholder="John Doe"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                                        <input 
+                                            type="email" 
+                                            required
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all text-white"
+                                            placeholder="john@example.com"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-2">Message</label>
+                                    <textarea 
+                                        rows="5" 
+                                        required
+                                        value={formData.message}
+                                        onChange={(e) => setFormData({...formData, message: e.target.value})}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all text-white resize-none"
+                                        placeholder="Tell me about your project..."
+                                    ></textarea>
+                                </div>
+                                <button 
+                                    type="submit" 
+                                    disabled={isSubmitting}
+                                    className="w-full py-4 bg-primary text-white font-semibold rounded-lg hover:bg-secondary transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                            Sending...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Send Message
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                                        </>
+                                    )}
+                                </button>
+                                {submitStatus === 'success' && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="p-4 bg-green-500/20 border border-green-500/30 rounded-lg text-green-400 text-center"
+                                    >
+                                        Message sent successfully! I'll get back to you soon.
+                                    </motion.div>
+                                )}
+                            </form>
+
+                            <div className="mt-12 pt-8 border-t border-white/10 grid md:grid-cols-3 gap-6 text-center">
+                                <a href="mailto:oliyideayimide05@gmail.com" className="group">
+                                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    </div>
+                                    <div className="text-sm font-medium">Email</div>
+                                    <div className="text-xs text-gray-500 mt-1">oliyideayimide05@gmail.com</div>
+                                </a>
+                                <a href="https://github.com/ayomide-html" target="_blank" className="group">
+                                    <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                    </div>
+                                    <div className="text-sm font-medium">GitHub</div>
+                                    <div className="text-xs text-gray-500 mt-1">@ayomide-html</div>
+                                </a>
+                                <a href="https://linkedin.com" target="_blank" className="group">
+                                    <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                    </div>
+                                    <div className="text-sm font-medium">LinkedIn</div>
+                                    <div className="text-xs text-gray-500 mt-1">Connect professionally</div>
+                                </a>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
+            );
+        };
+
+        // Footer
+        const Footer = () => {
+            return (
+                <footer className="py-8 border-t border-white/10">
+                    <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div className="text-2xl font-bold gradient-text">OA</div>
+                        <div className="text-gray-500 text-sm">
+                            © 2024 Oliyide Ayomide. Built with React & Tailwind CSS.
+                        </div>
+                        <div className="flex gap-4">
+                            <a href="https://github.com/ayomide-html" target="_blank" className="text-gray-500 hover:text-white transition-colors">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            </a>
+                            <a href="mailto:oliyideayimide05@gmail.com" className="text-gray-500 hover:text-white transition-colors">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                            </a>
+                        </div>
+                    </div>
+                </footer>
+            );
+        };
+
+        // Main App
+        const App = () => {
+            return (
+                <div className="min-h-screen bg-darker text-white overflow-x-hidden">
+                    <Navbar />
+                    <Hero />
+                    <About />
+                    <Skills />
+                    <Projects />
+                    <Services />
+                    <GitHubStats />
+                    <Contact />
+                    <Footer />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
